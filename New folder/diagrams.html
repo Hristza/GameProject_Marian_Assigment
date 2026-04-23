@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>Диаграми на автоматите — Defend the Base</title>
+    <style>
+        body { background: #0d1117; color: #e6edf3; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 30px; }
+        h1 { text-align: center; color: #58a6ff; letter-spacing: 2px; margin-bottom: 6px; }
+        .subtitle { text-align: center; color: #8b949e; margin-bottom: 40px; font-size: 14px; }
+        .section { margin-bottom: 60px; }
+        h2 { color: #f0883e; font-size: 18px; margin-bottom: 16px; border-left: 4px solid #f0883e; padding-left: 12px; }
+        svg text { font-family: 'Segoe UI', sans-serif; }
+        .legend { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 14px; font-size: 13px; color: #8b949e; }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+    </style>
+</head>
+<body>
+<h1>ДИАГРАМИ НА АВТОМАТИТЕ</h1>
+<p class="subtitle">Defend the Base — ULTIMATE EDITION</p>
+
+<!-- ══════════════════════════════════════════════════════════
+     1. ENEMY FSM
+═══════════════════════════════════════════════════════════ -->
+<div class="section">
+    <h2>1. Автомат на врага (Enemy FSM)</h2>
+    <svg width="820" height="300" style="background:#161b22; border-radius:12px; display:block;">
+        <defs>
+            <!-- Arrowhead markers -->
+            <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#58a6ff"/>
+            </marker>
+            <marker id="arrRed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#f85149"/>
+            </marker>
+            <marker id="arrGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#3fb950"/>
+            </marker>
+            <marker id="arrOrange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#f0883e"/>
+            </marker>
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+        </defs>
+
+        <!-- ── Nodes ── -->
+        <!-- SPAWN -->
+        <circle cx="90" cy="150" r="48" fill="#1f2d3d" stroke="#58a6ff" stroke-width="2.5"/>
+        <text x="90" y="145" text-anchor="middle" fill="#58a6ff" font-size="13" font-weight="bold">SPAWN</text>
+        <text x="90" y="162" text-anchor="middle" fill="#8b949e" font-size="11">timer &gt; 20</text>
+
+        <!-- WALK -->
+        <circle cx="270" cy="150" r="48" fill="#1f2d3d" stroke="#3fb950" stroke-width="2.5"/>
+        <text x="270" y="145" text-anchor="middle" fill="#3fb950" font-size="13" font-weight="bold">WALK</text>
+        <text x="270" y="162" text-anchor="middle" fill="#8b949e" font-size="11">x -= speed</text>
+
+        <!-- ATTACK -->
+        <circle cx="480" cy="80" r="48" fill="#1f2d3d" stroke="#f0883e" stroke-width="2.5"/>
+        <text x="480" y="75" text-anchor="middle" fill="#f0883e" font-size="13" font-weight="bold">ATTACK</text>
+        <text x="480" y="92" text-anchor="middle" fill="#8b949e" font-size="11">dmg every 30f</text>
+
+        <!-- REACHED_BASE -->
+        <circle cx="480" cy="230" r="48" fill="#1f2d3d" stroke="#f85149" stroke-width="2.5"/>
+        <text x="480" y="225" text-anchor="middle" fill="#f85149" font-size="12" font-weight="bold">REACHED</text>
+        <text x="480" y="242" text-anchor="middle" fill="#f85149" font-size="12" font-weight="bold">_BASE</text>
+
+        <!-- DEAD -->
+        <circle cx="700" cy="150" r="48" fill="#2d1f1f" stroke="#f85149" stroke-width="2.5" stroke-dasharray="6,3"/>
+        <text x="700" y="145" text-anchor="middle" fill="#f85149" font-size="13" font-weight="bold">DEAD</text>
+        <text x="700" y="162" text-anchor="middle" fill="#8b949e" font-size="11">removed</text>
+
+        <!-- ── Edges ── -->
+        <!-- SPAWN → WALK -->
+        <line x1="139" y1="150" x2="217" y2="150" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="178" y="143" text-anchor="middle" fill="#58a6ff" font-size="11">timer &gt; 20</text>
+
+        <!-- WALK → ATTACK -->
+        <path d="M300 118 Q380 60 431 78" fill="none" stroke="#f0883e" stroke-width="2" marker-end="url(#arrOrange)"/>
+        <text x="360" y="68" text-anchor="middle" fill="#f0883e" font-size="11">tower blocking</text>
+
+        <!-- ATTACK → WALK (tower gone) -->
+        <path d="M432 112 Q380 150 318 140" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#arrGreen)" stroke-dasharray="5,3"/>
+        <text x="378" y="148" text-anchor="middle" fill="#3fb950" font-size="11">tower destroyed</text>
+
+        <!-- WALK → REACHED_BASE -->
+        <path d="M255 197 Q310 250 431 234" fill="none" stroke="#f85149" stroke-width="2" marker-end="url(#arrRed)"/>
+        <text x="330" y="252" text-anchor="middle" fill="#f85149" font-size="11">x ≤ 50</text>
+
+        <!-- REACHED_BASE → DEAD -->
+        <path d="M528 218 Q620 200 651 168" fill="none" stroke="#f85149" stroke-width="2" marker-end="url(#arrRed)"/>
+        <text x="605" y="210" text-anchor="middle" fill="#f85149" font-size="11">instant</text>
+
+        <!-- WALK → DEAD (health ≤ 0) -->
+        <path d="M318 150 Q510 150 651 150" fill="none" stroke="#f85149" stroke-width="2" marker-end="url(#arrRed)" stroke-dasharray="4,4"/>
+        <text x="490" y="143" text-anchor="middle" fill="#f85149" font-size="11">health ≤ 0</text>
+
+        <!-- ATTACK → DEAD (health ≤ 0) -->
+        <path d="M528 90 Q640 100 652 138" fill="none" stroke="#f85149" stroke-width="2" marker-end="url(#arrRed)" stroke-dasharray="4,4"/>
+        <text x="615" y="100" text-anchor="middle" fill="#f85149" font-size="11">health ≤ 0</text>
+
+        <!-- Initial dot -->
+        <circle cx="40" cy="150" r="8" fill="#58a6ff"/>
+        <line x1="48" y1="150" x2="41" y2="150" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr)"/>
+    </svg>
+    <div class="legend">
+        <div class="legend-item"><div class="dot" style="background:#58a6ff"></div> начално/преходно</div>
+        <div class="legend-item"><div class="dot" style="background:#3fb950"></div> нормално движение</div>
+        <div class="legend-item"><div class="dot" style="background:#f0883e"></div> атака на кула</div>
+        <div class="legend-item"><div class="dot" style="background:#f85149"></div> смърт / пробив</div>
+        <span style="color:#8b949e">— — пунктир = условен преход (health ≤ 0 от всяко състояние)</span>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     2. GAME STATE FSM
+═══════════════════════════════════════════════════════════ -->
+<div class="section">
+    <h2>2. Автомат на играта (Game State FSM)</h2>
+    <svg width="820" height="320" style="background:#161b22; border-radius:12px; display:block;">
+        <defs>
+            <marker id="arr2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#58a6ff"/>
+            </marker>
+            <marker id="arrR2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#f85149"/>
+            </marker>
+            <marker id="arrG2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#3fb950"/>
+            </marker>
+            <marker id="arrY2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#e3b341"/>
+            </marker>
+            <marker id="arrP2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#bc8cff"/>
+            </marker>
+        </defs>
+
+        <!-- ── Nodes ── -->
+        <!-- START -->
+        <rect x="42" y="120" width="110" height="60" rx="12" fill="#1f2d3d" stroke="#58a6ff" stroke-width="2.5"/>
+        <text x="97" y="147" text-anchor="middle" fill="#58a6ff" font-size="14" font-weight="bold">START</text>
+        <text x="97" y="165" text-anchor="middle" fill="#8b949e" font-size="11">начален екран</text>
+
+        <!-- PLAYING -->
+        <rect x="230" y="120" width="120" height="60" rx="12" fill="#1a2d1a" stroke="#3fb950" stroke-width="2.5"/>
+        <text x="290" y="147" text-anchor="middle" fill="#3fb950" font-size="14" font-weight="bold">PLAYING</text>
+        <text x="290" y="165" text-anchor="middle" fill="#8b949e" font-size="11">основен цикъл</text>
+
+        <!-- PAUSED -->
+        <rect x="230" y="30" width="120" height="55" rx="12" fill="#1f1f2d" stroke="#bc8cff" stroke-width="2.5"/>
+        <text x="290" y="55" text-anchor="middle" fill="#bc8cff" font-size="14" font-weight="bold">PAUSED</text>
+        <text x="290" y="73" text-anchor="middle" fill="#8b949e" font-size="11">[SPACE]</text>
+
+        <!-- NEXT_LEVEL -->
+        <rect x="450" y="40" width="130" height="60" rx="12" fill="#1f2d1f" stroke="#e3b341" stroke-width="2.5"/>
+        <text x="515" y="63" text-anchor="middle" fill="#e3b341" font-size="13" font-weight="bold">NEXT_LEVEL</text>
+        <text x="515" y="82" text-anchor="middle" fill="#8b949e" font-size="11">wave cleared</text>
+
+        <!-- GAMEOVER -->
+        <rect x="450" y="150" width="130" height="60" rx="12" fill="#2d1f1f" stroke="#f85149" stroke-width="2.5"/>
+        <text x="515" y="175" text-anchor="middle" fill="#f85149" font-size="13" font-weight="bold">GAMEOVER</text>
+        <text x="515" y="193" text-anchor="middle" fill="#8b949e" font-size="11">baseHP ≤ 0</text>
+
+        <!-- WIN -->
+        <rect x="450" y="250" width="130" height="55" rx="12" fill="#1a1f2d" stroke="#58a6ff" stroke-width="2.5" stroke-dasharray="5,3"/>
+        <text x="515" y="275" text-anchor="middle" fill="#58a6ff" font-size="14" font-weight="bold">WIN</text>
+        <text x="515" y="293" text-anchor="middle" fill="#8b949e" font-size="11">level ≥ 10 done</text>
+
+        <!-- Reload (reload page) -->
+        <rect x="680" y="150" width="100" height="55" rx="12" fill="#1a1a1a" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="730" y="175" text-anchor="middle" fill="#6e7681" font-size="12" font-weight="bold">RELOAD</text>
+        <text x="730" y="193" text-anchor="middle" fill="#6e7681" font-size="10">location.reload()</text>
+
+        <!-- ── Edges ── -->
+        <!-- Initial dot → START -->
+        <circle cx="20" cy="150" r="8" fill="#58a6ff"/>
+        <line x1="28" y1="150" x2="41" y2="150" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr2)"/>
+
+        <!-- START → PLAYING -->
+        <line x1="152" y1="150" x2="229" y2="150" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr2)"/>
+        <text x="191" y="143" text-anchor="middle" fill="#58a6ff" font-size="11">INITIALIZE</text>
+
+        <!-- PLAYING ↔ PAUSED -->
+        <path d="M265 120 L265 86" fill="none" stroke="#bc8cff" stroke-width="2" marker-end="url(#arrP2)"/>
+        <text x="240" y="107" text-anchor="middle" fill="#bc8cff" font-size="11">[SPACE]</text>
+        <path d="M315 85 L315 120" fill="none" stroke="#bc8cff" stroke-width="2" marker-end="url(#arrP2)" stroke-dasharray="4,3"/>
+
+        <!-- PLAYING → NEXT_LEVEL -->
+        <path d="M350 138 Q400 100 449 90" fill="none" stroke="#e3b341" stroke-width="2" marker-end="url(#arrY2)"/>
+        <text x="395" y="108" text-anchor="middle" fill="#e3b341" font-size="11">wave done</text>
+
+        <!-- NEXT_LEVEL → PLAYING (NEXT WAVE) -->
+        <path d="M450 85 Q380 60 350 130" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#arrG2)" stroke-dasharray="4,3"/>
+        <text x="385" y="72" text-anchor="middle" fill="#3fb950" font-size="11">NEXT WAVE</text>
+
+        <!-- PLAYING → GAMEOVER -->
+        <path d="M350 162 L449 175" fill="none" stroke="#f85149" stroke-width="2" marker-end="url(#arrR2)"/>
+        <text x="395" y="162" text-anchor="middle" fill="#f85149" font-size="11">baseHP=0</text>
+
+        <!-- PLAYING → WIN -->
+        <path d="M350 168 Q390 250 449 268" fill="none" stroke="#58a6ff" stroke-width="2" marker-end="url(#arr2)"/>
+        <text x="380" y="238" text-anchor="middle" fill="#58a6ff" font-size="11">level 10 done</text>
+
+        <!-- GAMEOVER → RELOAD -->
+        <line x1="580" y1="178" x2="679" y2="178" stroke="#f85149" stroke-width="1.5" marker-end="url(#arrR2)" stroke-dasharray="4,3"/>
+        <text x="630" y="170" text-anchor="middle" fill="#f85149" font-size="11">REBOOT</text>
+
+        <!-- WIN → RELOAD -->
+        <path d="M580 268 Q640 240 680 205" fill="none" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr2)" stroke-dasharray="4,3"/>
+        <text x="648" y="248" text-anchor="middle" fill="#58a6ff" font-size="11">PLAY AGAIN</text>
+    </svg>
+    <div class="legend">
+        <div class="legend-item"><div class="dot" style="background:#58a6ff"></div> инициализация / win</div>
+        <div class="legend-item"><div class="dot" style="background:#3fb950"></div> нормален напредък</div>
+        <div class="legend-item"><div class="dot" style="background:#e3b341"></div> край на вълна</div>
+        <div class="legend-item"><div class="dot" style="background:#bc8cff"></div> пауза</div>
+        <div class="legend-item"><div class="dot" style="background:#f85149"></div> смърт</div>
+        <span style="color:#8b949e">— — пунктир = обратен/незадължителен преход</span>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     3. FREEZE DEBUFF STATE (Enemy sub-FSM)
+═══════════════════════════════════════════════════════════ -->
+<div class="section">
+    <h2>3. Под-автомат на Freeze дебъфа (Enemy)</h2>
+    <svg width="500" height="160" style="background:#161b22; border-radius:12px; display:block;">
+        <defs>
+            <marker id="arrC" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#00bcd4"/>
+            </marker>
+            <marker id="arrW" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#3fb950"/>
+            </marker>
+        </defs>
+
+        <!-- NORMAL -->
+        <rect x="40" y="55" width="130" height="55" rx="10" fill="#1f2d1f" stroke="#3fb950" stroke-width="2.5"/>
+        <text x="105" y="80" text-anchor="middle" fill="#3fb950" font-size="13" font-weight="bold">NORMAL</text>
+        <text x="105" y="98" text-anchor="middle" fill="#8b949e" font-size="11">speed = baseSpeed</text>
+
+        <!-- FROZEN -->
+        <rect x="250" y="55" width="130" height="55" rx="10" fill="#1a2a2d" stroke="#00bcd4" stroke-width="2.5"/>
+        <text x="315" y="78" text-anchor="middle" fill="#00bcd4" font-size="13" font-weight="bold">FROZEN</text>
+        <text x="315" y="95" text-anchor="middle" fill="#8b949e" font-size="11">speed × 0.3</text>
+
+        <!-- NORMAL → FROZEN -->
+        <path d="M170 75 L249 75" fill="none" stroke="#00bcd4" stroke-width="2" marker-end="url(#arrC)"/>
+        <text x="210" y="68" text-anchor="middle" fill="#00bcd4" font-size="11">Freeze bullet hit</text>
+
+        <!-- FROZEN → NORMAL -->
+        <path d="M250 92 L170 92" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#arrW)" stroke-dasharray="4,3"/>
+        <text x="210" y="110" text-anchor="middle" fill="#3fb950" font-size="11">freezeTimer ≤ 0 (140f)</text>
+
+        <!-- Initial dot -->
+        <circle cx="18" cy="82" r="7" fill="#3fb950"/>
+        <line x1="25" y1="82" x2="39" y2="82" stroke="#3fb950" stroke-width="2" marker-end="url(#arrW)"/>
+
+        <!-- Note -->
+        <text x="450" y="82" text-anchor="end" fill="#6e7681" font-size="11">140 frames</text>
+        <text x="450" y="96" text-anchor="end" fill="#6e7681" font-size="11">≈ 2.3 sec</text>
+    </svg>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     4. COMBO KILL SUB-FSM
+═══════════════════════════════════════════════════════════ -->
+<div class="section">
+    <h2>4. Под-автомат на Combo системата</h2>
+    <svg width="680" height="160" style="background:#161b22; border-radius:12px; display:block;">
+        <defs>
+            <marker id="arrO" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#f0883e"/>
+            </marker>
+            <marker id="arrG3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0,10 3.5,0 7" fill="#3fb950"/>
+            </marker>
+        </defs>
+
+        <!-- IDLE -->
+        <rect x="30" y="55" width="115" height="55" rx="10" fill="#1f2d1f" stroke="#3fb950" stroke-width="2"/>
+        <text x="88" y="80" text-anchor="middle" fill="#3fb950" font-size="13" font-weight="bold">IDLE</text>
+        <text x="88" y="97" text-anchor="middle" fill="#8b949e" font-size="11">combo = 0</text>
+
+        <!-- COMBO -->
+        <rect x="230" y="55" width="120" height="55" rx="10" fill="#2d1f0a" stroke="#f0883e" stroke-width="2.5"/>
+        <text x="290" y="78" text-anchor="middle" fill="#f0883e" font-size="13" font-weight="bold">COMBO x{n}</text>
+        <text x="290" y="96" text-anchor="middle" fill="#8b949e" font-size="11">timer = 120f</text>
+
+        <!-- MAX COMBO -->
+        <rect x="450" y="55" width="130" height="55" rx="10" fill="#2d150a" stroke="#ff6b35" stroke-width="2.5"/>
+        <text x="515" y="78" text-anchor="middle" fill="#ff6b35" font-size="13" font-weight="bold">MAX x5</text>
+        <text x="515" y="96" text-anchor="middle" fill="#8b949e" font-size="11">reward ×5</text>
+
+        <!-- IDLE → COMBO -->
+        <path d="M145 82 L229 82" fill="none" stroke="#f0883e" stroke-width="2" marker-end="url(#arrO)"/>
+        <text x="187" y="73" text-anchor="middle" fill="#f0883e" font-size="11">kill (fast)</text>
+
+        <!-- COMBO self-loop (kill) -->
+        <path d="M290 55 Q290 20 320 20 Q360 20 360 55" fill="none" stroke="#f0883e" stroke-width="2" marker-end="url(#arrO)"/>
+        <text x="325" y="14" text-anchor="middle" fill="#f0883e" font-size="11">kill (within 120f)</text>
+
+        <!-- COMBO → MAX -->
+        <path d="M350 82 L449 82" fill="none" stroke="#ff6b35" stroke-width="2" marker-end="url(#arrO)"/>
+        <text x="400" y="73" text-anchor="middle" fill="#ff6b35" font-size="11">n ≥ 5</text>
+
+        <!-- COMBO → IDLE (timeout) -->
+        <path d="M230 100 Q130 130 100 110" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#arrG3)" stroke-dasharray="4,3"/>
+        <text x="160" y="138" text-anchor="middle" fill="#3fb950" font-size="11">120f без kill</text>
+
+        <!-- MAX → IDLE (timeout) -->
+        <path d="M450 105 Q290 145 145 105" fill="none" stroke="#3fb950" stroke-width="2" marker-end="url(#arrG3)" stroke-dasharray="4,3"/>
+        <text x="340" y="155" text-anchor="middle" fill="#3fb950" font-size="11">120f без kill → reset</text>
+
+        <!-- Initial dot -->
+        <circle cx="10" cy="82" r="7" fill="#3fb950"/>
+        <line x1="17" y1="82" x2="29" y2="82" stroke="#3fb950" stroke-width="2" marker-end="url(#arrG3)"/>
+    </svg>
+    <div class="legend">
+        <div class="legend-item"><div class="dot" style="background:#f0883e"></div> combo нараства</div>
+        <div class="legend-item"><div class="dot" style="background:#3fb950"></div> reset</div>
+        <span style="color:#8b949e">120 frames ≈ 2 секунди прозорец</span>
+    </div>
+</div>
+
+<p style="color:#6e7681; font-size:12px; text-align:center; margin-top:20px;">Defend the Base — ULTIMATE EDITION &nbsp;·&nbsp; FSM Diagrams</p>
+</body>
+</html>
