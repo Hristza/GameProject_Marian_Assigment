@@ -32,7 +32,7 @@ before clicking.
 STEP 3: SELECT A TOWER TYPE
 Click one of the five buttons in the build menu at the top of the screen:
 
-    🗼 SHOOTER  — $50   General-purpose. Fast fire rate, medium range.
+    🗼 SHOOTER  — $25   General-purpose. Fast fire rate, medium range.
     🛡️ WALL     — $25   Does not shoot. Blocks enemies and absorbs hits.
     💣 CANNON   — $100  Slow but powerful. Explodes on impact (area damage).
     🎯 SNIPER   — $75   Extreme range. High single-target damage.
